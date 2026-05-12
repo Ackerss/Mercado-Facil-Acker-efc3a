@@ -1,16 +1,44 @@
-# React + Vite
+# 🛒 Mercado Fácil ACKER
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Modernização do protótipo Mercado Fácil para uma aplicação web progressiva, colaborativa e em tempo real.
 
-Currently, two official plugins are available:
+## 🔗 Links Oficiais
+- **Site Online:** [https://mercado-facil.netlify.app/](https://mercado-facil.netlify.app/)
+- **Repositório GitHub:** [https://github.com/Ackerss/Mercado-Facil-Acker-efc3a](https://github.com/Ackerss/Mercado-Facil-Acker-efc3a)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Tecnologias Utilizadas
+- **Frontend:** React + Vite
+- **Estilização:** Tailwind CSS v4 (Design moderno e responsivo)
+- **Backend/Database:** Firebase Firestore (Sincronização em tempo real)
+- **Autenticação:** Firebase Auth (Login Anônimo)
+- **Deployment:** Netlify
 
-## React Compiler
+## ✨ Funcionalidades Principais
+1. **Sincronização em Tempo Real:** Várias pessoas podem editar a mesma lista simultaneamente. Mudanças feitas por um usuário aparecem instantaneamente para os outros.
+2. **Compartilhamento Dinâmico:** Cada lista tem um ID único na URL. Basta copiar e enviar o link para um amigo.
+3. **Divisão de Compras (Rachar a Conta):** Interface integrada para calcular a divisão do valor total entre os membros da família/grupo.
+4. **Interface Mobile-First:** Design otimizado para uso em smartphones dentro do supermercado.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Configuração do Ambiente (Guia para Futuras IAs)
+Para que o projeto funcione, as seguintes configurações foram feitas no Console do Firebase:
 
-## Expanding the ESLint configuration
+### 1. Firebase Authentication
+- O método **Login Anônimo** deve estar ativado.
+- Isso permite que os usuários usem o app sem precisar criar conta com e-mail, mas mantendo a segurança da conexão.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 2. Cloud Firestore
+- O banco de dados foi criado em **Modo de Teste** (leitura/escrita liberada).
+- Estrutura de dados:
+  - Coleção: `lists` -> Documento: `{listId}` -> Sub-coleção: `items`.
+
+### 3. Chaves de API
+- As chaves estão configuradas diretamente no arquivo `src/firebase.js`.
+- Em ambiente profissional, estas chaves devem ser movidas para variáveis de ambiente `.env`.
+
+## 📦 Comandos Disponíveis
+- `npm install`: Instala as dependências.
+- `npm run dev`: Inicia o servidor de desenvolvimento local.
+- `npm run build`: Gera a versão de produção na pasta `dist/`.
+
+---
+Desenvolvido com excelência por **Antigravity AI** em parceria com **Ackerss**.
