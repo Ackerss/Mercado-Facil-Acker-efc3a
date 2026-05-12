@@ -19,7 +19,10 @@ Este documento serve para fornecer contexto imediato a qualquer IA que for traba
 - `tailwindcss`: Estilização via classes utilitárias (v4).
 
 ## Fluxo de Deploy
-O projeto está configurado para deploy contínuo no Netlify. Qualquer `push` no repositório GitHub (`master` ou `main`) disparará um novo build automático.
+O projeto está configurado para deploy contínuo no Netlify através do GitHub.
+- **Branch Oficial:** O Netlify escuta as mudanças na branch `main`. Portanto, lembre-se sempre de fazer push para `main`. Se estiver em outra branch local (ex: `feature/xyz`), use `git push netlify feature/xyz:main` (ou o remote apropriado) para disparar o deploy online imediatamente.
+- **ATENÇÃO AO POWERSHELL:** No ambiente Windows deste usuário, não use o operador `&&` para concatenar comandos (ex: `git add . && git commit`). Execute os comandos de forma separada ou use `;` para evitar falhas de sintaxe e atrasos desnecessários.
+- Antes de fazer o push para o `main`, lembre-se de rodar um `git pull netlify main --rebase` para garantir que seu repositório local não esteja atrás do repositório remoto.
 
 ---
 **Status Atual:** Projeto entregue, online e funcional.
