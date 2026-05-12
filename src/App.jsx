@@ -106,8 +106,15 @@ function App() {
 
   const handleProcessText = () => {
     if (!pasteText.trim()) return;
-    const newItems = pasteText
-      .split('\n')
+    
+    let cleanText = pasteText.trim();
+    // Remove parênteses envolventes se a lista inteira estiver dentro deles
+    if (cleanText.startsWith('(') && cleanText.endsWith(')')) {
+      cleanText = cleanText.slice(1, -1);
+    }
+
+    const newItems = cleanText
+      .split(/[\n,;]+/)
       .map(line => line.replace(/^[\s\-\*\•]+/, '').trim())
       .filter(line => line.length > 0)
       .map(text => ({
@@ -116,6 +123,7 @@ function App() {
         checked: false,
         timestamp: Date.now()
       }));
+      
     const updated = [...items, ...newItems];
     setItems(updated);
     setPasteText('');
