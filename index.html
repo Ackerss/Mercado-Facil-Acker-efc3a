@@ -1,0 +1,393 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  CheckCircle2, 
+  Circle, 
+  Trash2, 
+  Plus, 
+  Minus, 
+  Users, 
+  ShoppingCart, 
+  Receipt,
+  ClipboardPaste,
+  Wifi,
+  Loader2
+} from 'lucide-react';
+
+// --- Configuração do Firebase ---
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
+
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+const initialBuyers = [
+  { id: '1', name: 'Família 1', heads: 4 },
+  { id: '2', name: 'Família 2', heads: 3 },
+  { id: '3', name: 'Família 3', heads: 2 },
+];
+
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Estados locais (sincronizados com a nuvem)
+  const [pasteText, setPasteText] = useState('');
+  const [items, setItems] = useState([]);
+  const [totalAmount, setTotalAmount] = useState('');
+  const [buyers, setBuyers] = useState(initialBuyers);
+
+  // --- 1. Autenticação e Sincronização em Tempo Real ---
+
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (error) {
+        console.error("Erro ao autenticar", error);
+      }
+    };
+    
+    initAuth();
+    
+    const unsubscribe = onAuthStateChanged(auth, setUser);
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Referência única para a lista compartilhada deste App
+    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mercado_state', 'shared_list');
+
+    const unsubscribe = onSnapshot(docRef, (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setItems(data.items || []);
+        setBuyers(data.buyers || initialBuyers);
+        setTotalAmount(data.totalAmount || '');
+      } else {
+        // Se for o primeiro acesso, cria o documento no banco
+        setDoc(docRef, { items: [], buyers: initialBuyers, totalAmount: '' });
+      }
+      setLoading(false);
+    }, (error) => {
+      console.error("Erro na sincronização:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  // Função central para salvar qualquer mudança na nuvem
+  const updateSharedState = async (newItems, newBuyers, newTotalAmount) => {
+    if (!user) return;
+    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mercado_state', 'shared_list');
+    await setDoc(docRef, {
+      items: newItems !== undefined ? newItems : items,
+      buyers: newBuyers !== undefined ? newBuyers : buyers,
+      totalAmount: newTotalAmount !== undefined ? newTotalAmount : totalAmount
+    });
+  };
+
+  // --- Lógica da Lista de Compras ---
+
+  const handleProcessText = () => {
+    if (!pasteText.trim()) return;
+
+    const newItems = pasteText
+      .split('\n')
+      .map(line => line.replace(/^[\s\-\*\•]+/, '').trim())
+      .filter(line => line.length > 0)
+      .map(text => ({
+        id: crypto.randomUUID(),
+        text,
+        checked: false,
+        timestamp: Date.now()
+      }));
+
+    const updatedItems = [...items, ...newItems];
+    setItems(updatedItems);
+    setPasteText('');
+    updateSharedState(updatedItems, undefined, undefined);
+  };
+
+  const toggleItem = (id) => {
+    const updatedItems = items.map(item => 
+      item.id === id ? { ...item, checked: !item.checked } : item
+    );
+    setItems(updatedItems);
+    updateSharedState(updatedItems, undefined, undefined);
+  };
+
+  const removeItem = (id) => {
+    const updatedItems = items.filter(item => item.id !== id);
+    setItems(updatedItems);
+    updateSharedState(updatedItems, undefined, undefined);
+  };
+
+  const clearChecked = () => {
+    const updatedItems = items.filter(item => !item.checked);
+    setItems(updatedItems);
+    updateSharedState(updatedItems, undefined, undefined);
+  };
+
+  const sortedItems = [...items].sort((a, b) => {
+    if (a.checked === b.checked) return 0;
+    return a.checked ? 1 : -1;
+  });
+
+  // --- Lógica da Divisão de Conta ---
+
+  const handleTotalChange = (val) => {
+    setTotalAmount(val);
+    updateSharedState(undefined, undefined, val);
+  };
+
+  const addBuyer = () => {
+    const newId = crypto.randomUUID();
+    const updatedBuyers = [...buyers, { id: newId, name: `Família ${buyers.length + 1}`, heads: 1 }];
+    setBuyers(updatedBuyers);
+    updateSharedState(undefined, updatedBuyers, undefined);
+  };
+
+  const removeBuyer = (id) => {
+    const updatedBuyers = buyers.filter(b => b.id !== id);
+    setBuyers(updatedBuyers);
+    updateSharedState(undefined, updatedBuyers, undefined);
+  };
+
+  const updateHeads = (id, delta) => {
+    const updatedBuyers = buyers.map(b => {
+      if (b.id === id) {
+        const newHeads = b.heads + delta;
+        return { ...b, heads: newHeads > 0 ? newHeads : 1 };
+      }
+      return b;
+    });
+    setBuyers(updatedBuyers);
+    updateSharedState(undefined, updatedBuyers, undefined);
+  };
+
+  const updateName = (id, newName) => {
+    const updatedBuyers = buyers.map(b => b.id === id ? { ...b, name: newName } : b);
+    setBuyers(updatedBuyers);
+    updateSharedState(undefined, updatedBuyers, undefined);
+  };
+
+  // Cálculos
+  const totalValue = parseFloat(totalAmount.replace(',', '.')) || 0;
+  const totalHeads = buyers.reduce((sum, b) => sum + b.heads, 0);
+  const costPerHead = totalHeads > 0 ? totalValue / totalHeads : 0;
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-green-600">
+        <Loader2 className="animate-spin mb-4" size={48} />
+        <p className="font-medium text-gray-600">Conectando à lista compartilhada...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-20 text-gray-800 font-sans">
+      {/* Header com indicador de Nuvem */}
+      <header className="bg-green-600 text-white p-4 shadow-md sticky top-0 z-10 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <ShoppingCart size={24} />
+          <h1 className="text-xl font-bold">Mercado Fácil</h1>
+        </div>
+        <div className="flex items-center gap-1 text-xs bg-green-700 px-2 py-1 rounded-full border border-green-500">
+          <Wifi size={14} />
+          <span>Online</span>
+        </div>
+      </header>
+
+      <main className="max-w-md mx-auto p-4 space-y-6">
+        
+        {/* SEÇÃO 1: LISTA DE COMPRAS */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ClipboardPaste size={20} className="text-gray-600" />
+              <h2 className="font-semibold text-gray-700">1. Lista Compartilhada</h2>
+            </div>
+          </div>
+          <div className="p-4 space-y-3">
+            <textarea
+              className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none resize-none"
+              rows="3"
+              placeholder="Cole aqui a lista do WhatsApp..."
+              value={pasteText}
+              onChange={(e) => setPasteText(e.target.value)}
+            />
+            <button
+              onClick={handleProcessText}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm"
+            >
+              Adicionar Itens na Nuvem
+            </button>
+          </div>
+
+          {items.length > 0 && (
+            <div className="border-t border-gray-100">
+              <div className="px-4 py-2 flex justify-between items-center bg-gray-50">
+                <span className="text-sm font-medium text-gray-500">
+                  {items.filter(i => i.checked).length} de {items.length} itens pegos
+                </span>
+                <button 
+                  onClick={clearChecked}
+                  className="text-xs text-red-500 font-medium hover:text-red-700"
+                >
+                  Limpar pegos
+                </button>
+              </div>
+              <ul className="max-h-80 overflow-y-auto p-2">
+                {sortedItems.map(item => (
+                  <li 
+                    key={item.id} 
+                    className={`flex items-center justify-between p-3 border-b border-gray-50 last:border-0 rounded-lg transition-all duration-300 ${item.checked ? 'bg-green-50/50 opacity-75' : 'hover:bg-gray-50'}`}
+                  >
+                    <div 
+                      className="flex items-center gap-3 flex-1 cursor-pointer py-1"
+                      onClick={() => toggleItem(item.id)}
+                    >
+                      {item.checked ? (
+                        <CheckCircle2 className="text-green-500 flex-shrink-0" size={24} />
+                      ) : (
+                        <Circle className="text-gray-300 flex-shrink-0" size={24} />
+                      )}
+                      <span className={`text-base select-none transition-all duration-300 ${item.checked ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+                        {item.text}
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => removeItem(item.id)}
+                      className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+
+        {/* SEÇÃO 2: DIVISÃO DA CONTA */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+            <Receipt size={20} className="text-gray-600" />
+            <h2 className="font-semibold text-gray-700">2. Rachar a Conta no Caixa</h2>
+          </div>
+          
+          <div className="p-4 space-y-5">
+            {/* Input do Total */}
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Total da Nota (R$)</label>
+              <input
+                type="number"
+                inputMode="decimal"
+                className="w-full text-2xl font-bold border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                placeholder="0,00"
+                value={totalAmount}
+                onChange={(e) => handleTotalChange(e.target.value)}
+              />
+            </div>
+
+            {/* Lista de Compradores */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <label className="block text-sm font-medium text-gray-600">Famílias / Compradores</label>
+                <button 
+                  onClick={addBuyer}
+                  className="flex items-center gap-1 text-sm text-green-600 font-medium bg-green-50 px-2 py-1 rounded-md hover:bg-green-100"
+                >
+                  <Plus size={16} /> Adicionar
+                </button>
+              </div>
+
+              {buyers.map((buyer) => (
+                <div key={buyer.id} className="bg-gray-50 border border-gray-200 rounded-lg p-3 flex flex-col gap-2">
+                  <div className="flex justify-between items-center gap-2">
+                    <input
+                      type="text"
+                      value={buyer.name}
+                      onChange={(e) => updateName(buyer.id, e.target.value)}
+                      className="bg-transparent font-medium text-gray-700 outline-none w-full border-b border-dashed border-gray-300 focus:border-green-500"
+                    />
+                    {buyers.length > 1 && (
+                      <button onClick={() => removeBuyer(buyer.id)} className="text-red-400 p-1 hover:text-red-600">
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-between items-center mt-1">
+                    <div className="flex items-center gap-3">
+                      <Users size={16} className="text-gray-500" />
+                      <span className="text-sm text-gray-600">Quantas pessoas?</span>
+                    </div>
+                    
+                    {/* Controle de Cabeças */}
+                    <div className="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                      <button 
+                        onClick={() => updateHeads(buyer.id, -1)}
+                        className="px-3 py-1 bg-gray-50 hover:bg-gray-100 text-gray-700 active:bg-gray-200"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <div className="w-10 text-center font-bold text-gray-800 border-x border-gray-100">
+                        {buyer.heads}
+                      </div>
+                      <button 
+                        onClick={() => updateHeads(buyer.id, 1)}
+                        className="px-3 py-1 bg-gray-50 hover:bg-gray-100 text-gray-700 active:bg-gray-200"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Resultado Final */}
+            <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4 shadow-inner">
+              <h3 className="text-sm font-semibold text-green-800 uppercase tracking-wide mb-3">Resultado da Divisão</h3>
+              
+              <div className="flex justify-between mb-4 pb-3 border-b border-green-200/60">
+                <span className="text-gray-600">Total de pessoas: <strong className="text-gray-800">{totalHeads}</strong></span>
+                <span className="text-gray-600">Por cabeça: <strong className="text-gray-800">{formatCurrency(costPerHead)}</strong></span>
+              </div>
+
+              <div className="space-y-3">
+                {buyers.map(buyer => (
+                  <div key={buyer.id} className="flex justify-between items-center text-sm">
+                    <span className="font-medium text-gray-700">{buyer.name} <span className="text-gray-400 font-normal">({buyer.heads} pess.)</span></span>
+                    <span className="font-bold text-green-700 text-base">{formatCurrency(buyer.heads * costPerHead)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
