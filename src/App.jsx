@@ -188,19 +188,19 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50 pb-12 selection:bg-emerald-500/30">
       {/* Header Premium */}
-      <header className="header-premium text-white p-4 sticky top-0 z-50 flex items-center justify-between">
+      <header className="header-premium p-4 sticky top-0 z-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-white/10 p-2 rounded-xl backdrop-blur-md">
-            <ShoppingCart size={22} className="text-emerald-300" />
+          <div className="bg-emerald-500/15 p-2 rounded-xl">
+            <ShoppingCart size={22} className="text-emerald-600" />
           </div>
-          <h1 className="text-lg font-extrabold tracking-tight">MERCADO FÁCIL <span className="text-emerald-300 font-medium">ACKER</span></h1>
+          <h1 className="text-lg font-extrabold tracking-tight text-slate-800">MERCADO FÁCIL <span className="text-emerald-500 font-medium">ACKER</span></h1>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={shareList} className="p-2 hover:bg-white/10 rounded-xl transition-all btn-ripple">
+          <button onClick={shareList} className="p-2 text-slate-500 hover:bg-slate-100 hover:text-emerald-600 rounded-xl transition-all btn-ripple">
             <Share2 size={20} />
           </button>
-          <div className="flex items-center gap-1.5 text-[10px] bg-black/20 px-2.5 py-1.5 rounded-full border border-white/10">
-            {error ? <WifiOff size={12} className="text-red-400" /> : <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />}
+          <div className="flex items-center gap-1.5 text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1.5 rounded-full border border-slate-200">
+            {error ? <WifiOff size={12} className="text-red-500" /> : <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
             <span className="font-bold tracking-wider uppercase">{error ? 'Erro' : 'Cloud Sync'}</span>
           </div>
         </div>

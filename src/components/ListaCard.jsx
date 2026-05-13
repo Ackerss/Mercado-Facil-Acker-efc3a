@@ -125,7 +125,7 @@ export default function ListaCard({
   const checkedCount = items.filter((i) => i.checked).length;
 
   return (
-    <section className="card-glow-list overflow-hidden">
+    <section className="card-premium overflow-hidden">
       {/* Header do card */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-slate-100">
         <div className="flex items-center gap-2.5">

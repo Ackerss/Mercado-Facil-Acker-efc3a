@@ -85,7 +85,7 @@ export default function RacharCard({
   };
 
   return (
-    <section className="card-glow-split overflow-hidden">
+    <section className="card-premium overflow-hidden">
       {/* Header */}
       <div className="px-4 py-4 flex items-center gap-2.5 border-b border-slate-100">
         <div className="w-8 h-8 rounded-xl bg-violet-500/15 flex items-center justify-center">
@@ -100,12 +100,12 @@ export default function RacharCard({
       <div className="p-4 space-y-5">
         {/* Campo Total — Destaque Dourado */}
         <div>
-          <label className="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2">
+          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">
             💰 Total da Nota
           </label>
-          <div className="input-total-container px-4 py-3">
+          <div className="input-total-container px-4 py-3 group">
             <div className="flex items-center gap-2">
-              <span className="text-amber-600 font-bold text-xl flex-shrink-0">R$</span>
+              <span className="text-slate-400 group-focus-within:text-emerald-500 font-bold text-xl flex-shrink-0 transition-colors">R$</span>
               <input
                 type="text"
                 inputMode="numeric"
