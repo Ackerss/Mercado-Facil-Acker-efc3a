@@ -21,9 +21,9 @@
   --glow-total-border: rgba(251, 191, 36, 0.7);
 
   /* App Background */
-  --bg-app: #0f1117;
-  --bg-card: #161b25;
-  --bg-card-elevated: #1c2333;
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-elevated: #ffffff;
 }
 
 html, body {
@@ -33,6 +33,7 @@ html, body {
   font-family: var(--font-main);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
+  color: #1e293b;
 }
 
 /* =====================================================

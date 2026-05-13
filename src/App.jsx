@@ -178,15 +178,15 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1117] flex flex-col items-center justify-center text-emerald-500">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-emerald-600">
         <Loader2 className="animate-spin mb-4" size={48} />
-        <p className="font-medium text-slate-400">Conectando ao Mercado Fácil...</p>
+        <p className="font-medium text-slate-500">Conectando ao Mercado Fácil...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1117] pb-12 selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-slate-50 pb-12 selection:bg-emerald-500/30">
       {/* Header Premium */}
       <header className="header-premium text-white p-4 sticky top-0 z-50 flex items-center justify-between">
         <div className="flex items-center gap-3">

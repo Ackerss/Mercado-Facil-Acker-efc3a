@@ -29,7 +29,7 @@ function CategoryChip({ category, active, onClick }) {
       className={`category-chip btn-ripple flex-shrink-0 ${
         active
           ? `${category.bgClass} ${category.borderClass} ${category.textClass}`
-          : 'bg-white/5 border-white/10 text-slate-400'
+          : 'bg-slate-100 border-slate-200 text-slate-500'
       }`}
     >
       <span>{category.emoji}</span>
@@ -73,8 +73,8 @@ function ListItem({ item, onToggle, onRemove }) {
           <span
             className={`text-sm leading-snug truncate ${
               item.checked
-                ? 'line-through text-slate-500'
-                : 'text-slate-200'
+                ? 'line-through text-slate-400'
+                : 'text-slate-700'
             }`}
           >
             {item.text}
@@ -127,13 +127,13 @@ export default function ListaCard({
   return (
     <section className="card-glow-list overflow-hidden">
       {/* Header do card */}
-      <div className="px-4 py-4 flex items-center justify-between border-b border-white/5">
+      <div className="px-4 py-4 flex items-center justify-between border-b border-slate-100">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-emerald-500/15 flex items-center justify-center">
-            <ClipboardPaste size={16} className="text-emerald-400" />
+            <ClipboardPaste size={16} className="text-emerald-500" />
           </div>
           <div>
-            <h2 className="font-bold text-slate-100 text-sm leading-none">Lista Compartilhada</h2>
+            <h2 className="font-bold text-slate-800 text-sm leading-none">Lista Compartilhada</h2>
             <p className="text-[10px] text-slate-500 mt-0.5 font-mono">#{listId}</p>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function ListaCard({
       <div className="p-4 space-y-3">
         <textarea
           ref={textareaRef}
-          className="w-full bg-slate-900/60 border border-white/8 rounded-xl p-3 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/25 resize-none transition-all"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/25 resize-none transition-all"
           rows={3}
           placeholder="Cole aqui a lista do WhatsApp..."
           value={pasteText}
@@ -168,14 +168,14 @@ export default function ListaCard({
 
       {/* Área de itens */}
       {items.length > 0 && (
-        <div className="border-t border-white/5">
+        <div className="border-t border-slate-100">
           {/* Contador */}
           <div className="px-4 py-2 flex items-center justify-between">
             <span className="text-[11px] text-slate-500 font-medium">
               {checkedCount} de {items.length} pegos
             </span>
             {/* Barra de progresso */}
-            <div className="flex-1 mx-3 h-1 bg-white/5 rounded-full overflow-hidden">
+            <div className="flex-1 mx-3 h-1 bg-slate-100 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
                 style={{ width: items.length > 0 ? `${(checkedCount / items.length) * 100}%` : '0%' }}
@@ -190,8 +190,8 @@ export default function ListaCard({
                 onClick={() => setActiveFilter(null)}
                 className={`category-chip btn-ripple flex-shrink-0 ${
                   !activeFilter
-                    ? 'bg-emerald-500/15 border-emerald-400/40 text-emerald-400'
-                    : 'bg-white/5 border-white/10 text-slate-400'
+                    ? 'bg-emerald-100 border-emerald-200 text-emerald-600'
+                    : 'bg-slate-100 border-slate-200 text-slate-500'
                 }`}
               >
                 🛒 Todos
