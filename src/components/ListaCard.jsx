@@ -160,7 +160,7 @@ export default function ListaCard({
         <button
           onClick={onProcessText}
           disabled={!pasteText.trim()}
-          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-emerald-900/30 btn-ripple active:scale-[0.98] text-sm"
+          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-emerald-900/30 btn-ripple active:scale-[0.98] text-sm"
         >
           Adicionar à Lista
         </button>

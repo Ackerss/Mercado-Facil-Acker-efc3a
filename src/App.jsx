@@ -218,6 +218,21 @@ function App() {
           onClearChecked={clearChecked}
         />
 
+        {/* Divisor com Glow (Estilo Light/Premium) */}
+        <div className="relative py-6">
+          <div className="absolute inset-0 flex items-center justify-center">
+            {/* Linha principal */}
+            <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40"></div>
+            {/* Efeito Glow */}
+            <div className="absolute w-3/4 h-[2px] bg-emerald-400 blur-[4px] opacity-30"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-slate-50 px-4 py-1.5 text-[10px] font-bold text-emerald-600 tracking-widest uppercase rounded-full border border-emerald-100 shadow-[0_0_15px_rgba(16,185,129,0.15)] backdrop-blur-sm">
+              Financeiro
+            </span>
+          </div>
+        </div>
+
         <RacharCard 
           buyers={buyers}
           totalAmount={totalAmount}
