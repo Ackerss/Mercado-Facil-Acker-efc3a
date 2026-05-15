@@ -25,4 +25,21 @@ O projeto está configurado para deploy contínuo no Netlify através do GitHub.
 - Antes de fazer o push para o `main`, lembre-se de rodar um `git pull netlify main --rebase` para garantir que seu repositório local não esteja atrás do repositório remoto.
 
 ---
-**Status Atual:** Projeto entregue, online e funcional.
+
+## ⚠️ Ecossistema de 3 Apps — LEIA ANTES DE AGIR
+
+Este projeto **não está sozinho**. Existe um terceiro app que copia o código desta pasta:
+
+- **App unificado:** `../mercado-acker_unificado/` (pasta vizinha)
+- **Documentação completa:** `../mercado-acker_unificado/LEIA_PRIMEIRO.md`
+- **Aviso específico desta pasta:** `./AVISO_PROJETO.md`
+
+**Regra essencial:** Edite livremente aqui. Para propagar pro app unificado:
+```bash
+cd "../mercado-acker_unificado"
+npm run sync:lista
+git add . && git commit -m "sync: atualiza aba lista" && git push
+```
+
+---
+**Status Atual:** Projeto entregue, online e funcional. Faz parte do ecossistema mercado-acker (3 apps).
